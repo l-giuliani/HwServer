@@ -37,7 +37,15 @@ func GpioRead() {
 
 func GpioGetData() dto.GpioDto{
 	gpioData := dao.GetGpioData()
-	fmt.Println(gpioData)
 
 	return gpioData
+}
+
+func FormatGpioData(gpioDto dto.GpioDto) []byte{
+	cx := context.GetContext()
+	return cx.HwLibs.GetFormattedData(gpioDto)
+}
+
+func GpioWrite(data []byte) {
+	
 }

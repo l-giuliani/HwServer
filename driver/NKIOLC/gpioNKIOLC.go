@@ -55,3 +55,7 @@ func (gpio *GpioNKIOLC) Read() (bool, dto.GpioDto) {
 
 	return true, data
 }
+
+func (gpio *GpioNKIOLC) Write() {
+
+}
