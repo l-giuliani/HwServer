@@ -46,6 +46,16 @@ func FormatGpioData(gpioDto dto.GpioDto) []byte{
 	return cx.HwLibs.GetFormattedData(gpioDto)
 }
 
-func GpioWrite(data []byte) {
-	
+func DecodeGpioData(data []byte) (bool, dto.GpioDto) {
+	cx := context.GetContext()
+	return cx.HwLibs.ParseData(data)
+}
+
+func GpioWrite(data []byte) bool {
+	res, gpioDto := DecodeGpioData(data)
+	if !res {
+		return false
+	}
+	cx := context.GetContext()
+	return cx.GpioDrv.Write(gpioDto)
 }

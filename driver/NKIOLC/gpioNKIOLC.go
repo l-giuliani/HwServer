@@ -56,6 +56,9 @@ func (gpio *GpioNKIOLC) Read() (bool, dto.GpioDto) {
 	return true, data
 }
 
-func (gpio *GpioNKIOLC) Write() {
+func (gpio *GpioNKIOLC) Write(gpioDto dto.GpioDto) bool {
+	fmt.Println("Scrittura Digitali")
+	fmt.Println(gpioDto)
 
+	return true
 }

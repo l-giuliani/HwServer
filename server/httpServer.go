@@ -13,11 +13,17 @@ func getGpioData(w http.ResponseWriter, r *http.Request) {
 
 func setGpioData(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
-	b, err := io.ReadAll(r.Body)
+	data, err := io.ReadAll(r.Body)
 	if err != nil {
 		return
 	}
-	w.Write(b)
+	
+	res := services.GpioWrite(data)
+	if !res {
+		w.WriteHeader(500)
+	} else {
+		w.Write(data)
+	}	
 }
 
 func gpioHnd (w http.ResponseWriter, r *http.Request) {
@@ -26,7 +32,7 @@ func gpioHnd (w http.ResponseWriter, r *http.Request) {
 	} else if r.Method == "POST"{
 		setGpioData(w, r)
 	} else {
-		//TODO return 401
+		w.WriteHeader(405)
 	}
 }
 
