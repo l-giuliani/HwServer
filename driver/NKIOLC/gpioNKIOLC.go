@@ -50,7 +50,18 @@ func (gpio *GpioNKIOLC) Read() (bool, dto.GpioDto) {
 	var data NKIOLCDto.GpioNKIOLCDtoStruct
 
 	for i:=0; i<8; i++ {
-		data.X[i] = (diByte0 & (1 << i))
+		if (diByte0 & (1 << i)) == 0 {
+			data.X[i] = 0
+		} else {
+			data.X[i] = 1
+		}
+	}
+	for i:=0; i<8; i++ {
+		if (diByte1 & (1 << i)) == 0 {
+			data.X[8+i] = 0
+		} else {
+			data.X[8+i] = 1
+		}
 	}
 
 	return true, data

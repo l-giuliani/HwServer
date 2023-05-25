@@ -65,3 +65,15 @@ func (hwLibs *HwLibsNKIOLC) GetFormattedData(gpioDto dto.GpioDto) []byte{
 	strD, _ := json.Marshal(d)
 	return strD
 }
+
+func (hwLibs *HwLibsNKIOLC) CheckGpioDataChanged(oldData dto.GpioDto, newData dto.GpioDto) bool{
+	oldDataDto := oldData.(NKIOLCDto.GpioNKIOLCDtoStruct)
+	newDataDto := newData.(NKIOLCDto.GpioNKIOLCDtoStruct)
+
+	for i:=0; i<16; i++ {
+		if oldDataDto.X[i] != newDataDto.X[i] {
+			return true
+		}
+	}
+	return false
+}

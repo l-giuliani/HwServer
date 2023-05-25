@@ -3,15 +3,12 @@ package services
 import "it.etg/gpioServer/driver/NKIOLC"
 import "it.etg/gpioServer/dao"
 import "it.etg/gpioServer/dto"
+import "it.etg/gpioServer/libs/gpio"
 import "it.etg/gpioServer/context"
-import "fmt"
-import "time"
-
-var readExecuting bool = false
 
 func GpioInit(continuousRead bool) {
 	gpioDrv := NKIOLC.NewGpioNKIOLC()
-	//gpioDrv.Init()
+	gpioDrv.Init()
 
 	cx := context.GetContext()
 	cx.GpioDrv = gpioDrv
@@ -19,43 +16,15 @@ func GpioInit(continuousRead bool) {
 	GpioRead()
 
 	if continuousRead {
-		StartContinuousRead()
+		libs.StartContinuousRead()
 	}
-}
-
-func gpioContinuousRead() {
-	start := time.Now()
-	for readExecuting {
-		t := time.Now()
-		if t.Sub(start) >= time.Duration(context.GetContext().Conf.AcquTime) * 1000000000 {
-			GpioRead()
-			start = t
-		}
-		time.Sleep(time.Second)
-	}
-	
-}
-
-func StartContinuousRead() {
-	if(!readExecuting) {
-		readExecuting = true
-		go gpioContinuousRead()
-	}
-}
-
-func StopContinuousRead() {
-	readExecuting = false
 }
 
 func GpioRead() {
-	cx := context.GetContext()
-	res, gpioDto := cx.GpioDrv.Read()
-	if !res {
-		fmt.Println("Errore Lettura Gpio")
-		return
+	res, gpioData := libs.GpioRead()
+	if res {
+		dao.SetGpioData(gpioData)
 	}
-	fmt.Println(gpioDto)
-	dao.SetGpioData(gpioDto)
 }
 
 func GpioGetData() dto.GpioDto{
