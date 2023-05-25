@@ -5,8 +5,11 @@ import "it.etg/gpioServer/dao"
 import "it.etg/gpioServer/dto"
 import "it.etg/gpioServer/context"
 import "fmt"
+import "time"
 
-func GpioInit() {
+var readExecuting bool = false
+
+func GpioInit(continuousRead bool) {
 	gpioDrv := NKIOLC.NewGpioNKIOLC()
 	//gpioDrv.Init()
 
@@ -14,14 +17,34 @@ func GpioInit() {
 	cx.GpioDrv = gpioDrv
 
 	GpioRead()
+
+	if continuousRead {
+		StartContinuousRead()
+	}
 }
 
-func GpioContinuousRead() {
+func gpioContinuousRead() {
+	start := time.Now()
+	for readExecuting {
+		t := time.Now()
+		if t.Sub(start) >= time.Duration(context.GetContext().Conf.AcquTime) * 1000000000 {
+			GpioRead()
+			start = t
+		}
+		time.Sleep(time.Second)
+	}
 	
 }
 
-func StopContinuousRead() {
+func StartContinuousRead() {
+	if(!readExecuting) {
+		readExecuting = true
+		go gpioContinuousRead()
+	}
+}
 
+func StopContinuousRead() {
+	readExecuting = false
 }
 
 func GpioRead() {
