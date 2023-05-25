@@ -5,5 +5,5 @@ import "it.etg/gpioServer/dto"
 type Gpio interface {
 	Init() bool
 	Read() (bool, dto.GpioDto)
-	Write(dto.GpioWriteDto) bool
+	Write(dto.GpioDto, dto.GpioWriteDto) bool
 }

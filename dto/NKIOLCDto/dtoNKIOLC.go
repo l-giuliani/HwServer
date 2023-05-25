@@ -22,6 +22,22 @@ type GpioNKIOLCSendData struct {
 	X13 byte
 	X14 byte
 	X15 byte
+	Y0 byte
+	Y1 byte
+	Y2 byte
+	Y3 byte
+	Y4 byte
+	Y5 byte
+	Y6 byte
+	Y7 byte
+	Y8 byte
+	Y9 byte
+	Y10 byte
+	Y11 byte
+	Y12 byte
+	Y13 byte
+	Y14 byte
+	Y15 byte
 }
 
 type GpioNKIOLCSetDataEl struct {

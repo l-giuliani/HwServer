@@ -5,25 +5,27 @@ import "it.etg/gpioServer/dao"
 import "it.etg/gpioServer/dto"
 import "it.etg/gpioServer/libs/gpio"
 import "it.etg/gpioServer/context"
-import "fmt"
 
 func GpioInit(continuousRead bool) {
 	gpioDrv := NKIOLC.NewGpioNKIOLC()
-	//gpioDrv.Init()
+	gpioDrv.Init()
 
 	cx := context.GetContext()
 	cx.GpioDrv = gpioDrv
 
-	GpioRead()
+	GpioRead(false)
 
 	if continuousRead {
 		libs.StartContinuousRead()
 	}
 }
 
-func GpioRead() {
+func GpioRead(notify bool) {
 	res, gpioData := libs.GpioRead()
 	if res {
+		if notify {
+			libs.NotifyStatus(gpioData)
+		}
 		dao.SetGpioData(gpioData)
 	}
 }
@@ -49,7 +51,9 @@ func GpioWrite(data []byte) bool {
 	if !res {
 		return false
 	}
-	fmt.Println(gpioWriteDto)
+	gpioData := dao.GetGpioData()
 	cx := context.GetContext()
-	return cx.GpioDrv.Write(gpioWriteDto)
+	cx.GpioDrv.Write(gpioData, gpioWriteDto)
+	GpioRead(true)
+	return true
 }

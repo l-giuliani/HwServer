@@ -71,6 +71,23 @@ func (hwLibs *HwLibsNKIOLC) GetFormattedData(gpioDto dto.GpioDto) []byte{
 	d.X14 = gpioSpecDto.X[14]
 	d.X15 = gpioSpecDto.X[15]
 
+	d.Y0 = gpioSpecDto.Y[0]
+	d.Y1 = gpioSpecDto.Y[1]
+	d.Y2 = gpioSpecDto.Y[2]
+	d.Y3 = gpioSpecDto.Y[3]
+	d.Y4 = gpioSpecDto.Y[4]
+	d.Y5 = gpioSpecDto.Y[5]
+	d.Y6 = gpioSpecDto.Y[6]
+	d.Y7 = gpioSpecDto.Y[7]
+	d.Y8 = gpioSpecDto.Y[8]
+	d.Y9 = gpioSpecDto.Y[9]
+	d.Y10 = gpioSpecDto.Y[10]
+	d.Y11 = gpioSpecDto.Y[11]
+	d.Y12 = gpioSpecDto.Y[12]
+	d.Y13 = gpioSpecDto.Y[13]
+	d.Y14 = gpioSpecDto.Y[14]
+	d.Y15 = gpioSpecDto.Y[15]
+
 	strD, _ := json.Marshal(d)
 	return strD
 }
@@ -81,6 +98,11 @@ func (hwLibs *HwLibsNKIOLC) CheckGpioDataChanged(oldData dto.GpioDto, newData dt
 
 	for i:=0; i<16; i++ {
 		if oldDataDto.X[i] != newDataDto.X[i] {
+			return true
+		}
+	}
+	for i:=0; i<16; i++ {
+		if oldDataDto.Y[i] != newDataDto.Y[i] {
 			return true
 		}
 	}

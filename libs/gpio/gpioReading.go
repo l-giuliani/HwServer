@@ -17,14 +17,7 @@ func gpioContinuousRead() {
 		if t.Sub(start) >= time.Duration(context.GetContext().Conf.AcquTime) * 1000000000 {
 			res, gpioData := GpioRead()
 			if res {
-				if context.GetContext().Conf.UDPEnabled {
-					if checkGpioStatusChanged(gpioData) {
-						if udpClient == nil {
-							udpClient = network.NewUdpClient()
-						}
-						udpClient.WriteAndClose(context.GetContext().Conf.UDPAddress, []byte("DO"))
-					}
-				}
+				NotifyStatus(gpioData)
 				dao.SetGpioData(gpioData)
 			}
 			start = t
@@ -32,6 +25,17 @@ func gpioContinuousRead() {
 		time.Sleep(time.Second)
 	}
 	
+}
+
+func NotifyStatus(gpioData dto.GpioDto) {
+	if context.GetContext().Conf.UDPEnabled {
+		if checkGpioStatusChanged(gpioData) {
+			if udpClient == nil {
+				udpClient = network.NewUdpClient()
+			}
+			udpClient.WriteAndClose(context.GetContext().Conf.UDPAddress, []byte("DO"))
+		}
+	}
 }
 
 func StartContinuousRead() {
