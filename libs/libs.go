@@ -3,7 +3,7 @@ package libs
 import "it.etg/gpioServer/dto"
 
 type HwLibs interface {
-	ParseData([]byte) (bool, dto.GpioDto)
+	ParseWriteData([]byte) (bool, dto.GpioWriteDto)
 	GetFormattedData(dto.GpioDto) []byte
 	CheckGpioDataChanged(dto.GpioDto, dto.GpioDto) bool
 }

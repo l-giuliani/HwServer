@@ -12,7 +12,7 @@ func NewConfig() *Config {
 
 func (config *Config) Init() {
 	//static init FIXME
-	config.AcquTime = 10
+	config.AcquTime = 30
 	config.UDPEnabled = true
 	config.UDPAddress = "127.0.0.1:9220"
 }

@@ -2,6 +2,7 @@ package NKIOLCDto
 
 type GpioNKIOLCDtoStruct struct {
 	X[16] byte
+	Y[16] byte
 }
 
 type GpioNKIOLCSendData struct {
@@ -21,4 +22,29 @@ type GpioNKIOLCSendData struct {
 	X13 byte
 	X14 byte
 	X15 byte
+}
+
+type GpioNKIOLCSetDataEl struct {
+	Update	bool
+	Value	byte
+	Time	uint32
+}
+
+type GpioNKIOLCSetData struct {
+	Y0 GpioNKIOLCSetDataEl
+	Y1 GpioNKIOLCSetDataEl
+	Y2 GpioNKIOLCSetDataEl
+	Y3 GpioNKIOLCSetDataEl
+	Y4 GpioNKIOLCSetDataEl
+	Y5 GpioNKIOLCSetDataEl
+	Y6 GpioNKIOLCSetDataEl
+	Y7 GpioNKIOLCSetDataEl
+	Y8 GpioNKIOLCSetDataEl
+	Y9 GpioNKIOLCSetDataEl
+	Y10 GpioNKIOLCSetDataEl
+	Y11 GpioNKIOLCSetDataEl
+	Y12 GpioNKIOLCSetDataEl
+	Y13 GpioNKIOLCSetDataEl
+	Y14 GpioNKIOLCSetDataEl
+	Y15 GpioNKIOLCSetDataEl
 }

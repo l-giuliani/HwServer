@@ -8,3 +8,7 @@ type GpioSendDataStruct interface {
 
 }
 
+type GpioWriteDto interface {
+	
+}
+

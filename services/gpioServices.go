@@ -5,10 +5,11 @@ import "it.etg/gpioServer/dao"
 import "it.etg/gpioServer/dto"
 import "it.etg/gpioServer/libs/gpio"
 import "it.etg/gpioServer/context"
+import "fmt"
 
 func GpioInit(continuousRead bool) {
 	gpioDrv := NKIOLC.NewGpioNKIOLC()
-	gpioDrv.Init()
+	//gpioDrv.Init()
 
 	cx := context.GetContext()
 	cx.GpioDrv = gpioDrv
@@ -40,14 +41,15 @@ func FormatGpioData(gpioDto dto.GpioDto) []byte{
 
 func DecodeGpioData(data []byte) (bool, dto.GpioDto) {
 	cx := context.GetContext()
-	return cx.HwLibs.ParseData(data)
+	return cx.HwLibs.ParseWriteData(data)
 }
 
 func GpioWrite(data []byte) bool {
-	res, gpioDto := DecodeGpioData(data)
+	res, gpioWriteDto := DecodeGpioData(data)
 	if !res {
 		return false
 	}
+	fmt.Println(gpioWriteDto)
 	cx := context.GetContext()
-	return cx.GpioDrv.Write(gpioDto)
+	return cx.GpioDrv.Write(gpioWriteDto)
 }
