@@ -22,7 +22,7 @@ func setGpioData(w http.ResponseWriter, r *http.Request) {
 	if !res {
 		w.WriteHeader(500)
 	} else {
-		w.Write(data)
+		w.WriteHeader(204)
 	}	
 }
 
