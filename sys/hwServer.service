@@ -1,0 +1,14 @@
+[Unit]
+Description=GpioServer service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+WorkingDirectory=/home/app
+User=root
+ExecStart=/usr/bin/sudo /home/app/gpioServer
+
+[Install]
+WantedBy=multi-user.target
