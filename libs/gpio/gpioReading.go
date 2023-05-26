@@ -15,6 +15,8 @@ var resetMutex sync.Mutex
 var mutexLocked bool = false
 var resetTimeData []dto.ResetTimeData
 var initResetTimeData bool = false
+var rwMutex sync.Mutex
+var rsMutex sync.Mutex
 
 func gpioContinuousRead() {
 	start := time.Now()
@@ -26,7 +28,7 @@ func gpioContinuousRead() {
 				NotifyStatus(gpioData)
 				dao.SetGpioData(gpioData)
 			}
-			start = t
+			start = time.Now()
 		}
 		time.Sleep(time.Second)
 	}
@@ -57,7 +59,11 @@ func StopContinuousRead() {
 
 func GpioRead() (bool, dto.GpioDto) {
 	cx := context.GetContext()
+
+	rwMutex.Lock()
 	res, gpioDto := cx.GpioDrv.Read()
+	rwMutex.Unlock()
+
 	if !res {
 		fmt.Println("Errore Lettura Gpio")
 		return false, gpioDto
@@ -85,15 +91,18 @@ func ResetGpoStateFun() {
 		now := time.Now()
 		changed := false
 
+		rsMutex.Lock()
 		for i:=0;i<len(resetTimeData);i++ {
 			if now.Sub(resetTimeData[i].StartTime) >= time.Duration(resetTimeData[i].Time) * 1000000000 {
 				gpoData := cx.HwLibs.GetOutputDataByDo(resetTimeData[i].Output)
-				GpioWrite(gpoData)
+				GpioWrite(gpoData, true)
 				changed = true
 				resetTimeData = append(resetTimeData[:i], resetTimeData[i+1:]...)
 				i--
 			}
 		}
+		rsMutex.Unlock()
+
 		if changed {
 			res, gpioR := GpioRead()
 			if res {
@@ -113,27 +122,45 @@ func AddResetData(wtime uint32, output string) {
 		go ResetGpoStateFun()
 	}
 	
-	var lResetTimeData dto.ResetTimeData
-	lResetTimeData.Time = wtime
-	lResetTimeData.StartTime = time.Now()
-	lResetTimeData.Output = output
-	resetTimeData = append(resetTimeData, lResetTimeData)
+	found := false
+
+	for i:=0;i<len(resetTimeData);i++ { 
+		if resetTimeData[i].Output == output {
+			resetTimeData[i].Time = wtime
+			resetTimeData[i].StartTime = time.Now()
+			found = true
+		}
+	}
+
+	if !found {
+		var lResetTimeData dto.ResetTimeData
+		lResetTimeData.Time = wtime
+		lResetTimeData.StartTime = time.Now()
+		lResetTimeData.Output = output
+		resetTimeData = append(resetTimeData, lResetTimeData)
+	}
 	if mutexLocked {
 		resetMutex.Unlock()
 		mutexLocked = false
 	}
 }
 
-func GpioWrite(gpioWriteDto dto.GpioWriteDto) bool {
+func GpioWrite(gpioWriteDto dto.GpioWriteDto, reset bool) bool {
+	rwMutex.Lock()
 	gpioData := dao.GetGpioData()
 	cx := context.GetContext()
 	cx.GpioDrv.Write(gpioData, gpioWriteDto)
+	rwMutex.Unlock()
+
 	rdw := cx.HwLibs.GetResetDataByWriteDto(gpioWriteDto)
 	
-	for i:=0; i<len(rdw); i++ {
-		AddResetData(rdw[i].Time, rdw[i].Output)
+	if !reset {
+		rsMutex.Lock()
+		for i:=0; i<len(rdw); i++ {
+			AddResetData(rdw[i].Time, rdw[i].Output)
+		}
+		rsMutex.Unlock()
 	}
-
 
 	return true
 }

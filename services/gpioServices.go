@@ -51,7 +51,7 @@ func GpioWrite(data []byte) bool {
 	if !res {
 		return false
 	}
-	libs.GpioWrite(gpioWriteDto)
+	libs.GpioWrite(gpioWriteDto, false)
 
 	//gpioData := dao.GetGpioData()
 	//cx := context.GetContext()
