@@ -7,4 +7,5 @@ type HwLibs interface {
 	GetFormattedData(dto.GpioDto) []byte
 	CheckGpioDataChanged(dto.GpioDto, dto.GpioDto) bool
 	GetOutputDataByDo(output string) dto.GpioWriteDto
+	GetResetDataByWriteDto(dto.GpioWriteDto) []dto.ResetTimeData
 }

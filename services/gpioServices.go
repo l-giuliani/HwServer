@@ -51,9 +51,11 @@ func GpioWrite(data []byte) bool {
 	if !res {
 		return false
 	}
-	gpioData := dao.GetGpioData()
-	cx := context.GetContext()
-	cx.GpioDrv.Write(gpioData, gpioWriteDto)
+	libs.GpioWrite(gpioWriteDto)
+
+	//gpioData := dao.GetGpioData()
+	//cx := context.GetContext()
+	//cx.GpioDrv.Write(gpioData, gpioWriteDto)
 	GpioRead(true)
 	return true
 }

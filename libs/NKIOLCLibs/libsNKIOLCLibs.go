@@ -3,6 +3,8 @@ package NKIOLCLibs
 import "it.etg/gpioServer/dto"
 import "it.etg/gpioServer/dto/NKIOLCDto"
 import "encoding/json"
+import "reflect"
+import "fmt"
 
 type HwLibsNKIOLC struct {
 
@@ -151,4 +153,24 @@ func (hwLibs *HwLibsNKIOLC) GetOutputDataByDo(output string) dto.GpioWriteDto {
 	}
 
 	return gpoData
+}
+
+func (hwLibs *HwLibsNKIOLC) GetResetDataByWriteDto(gpioDto dto.GpioWriteDto) []dto.ResetTimeData {
+	gpioDtoSpec := gpioDto.(NKIOLCDto.GpioNKIOLCSetData)
+	v := reflect.ValueOf(gpioDtoSpec)
+
+	var rd []dto.ResetTimeData
+	rd = make([]dto.ResetTimeData, 0)
+
+	for i := 0; i< v.NumField(); i++ {
+        el := v.Field(i).Interface().(NKIOLCDto.GpioNKIOLCSetDataEl)
+		if el.Update && el.Value != 0 && el.Time > 0  {
+			var r dto.ResetTimeData
+			r.Time = el.Time
+			r.Output = fmt.Sprintf("%s%d", "Y", i)
+			rd = append(rd, r)
+		}
+	}
+
+	return rd
 }

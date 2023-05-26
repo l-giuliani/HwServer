@@ -12,7 +12,9 @@ var readExecuting bool = false
 var udpClient *network.UdpClient = nil
 
 var resetMutex sync.Mutex
+var mutexLocked bool = false
 var resetTimeData []dto.ResetTimeData
+var initResetTimeData bool = false
 
 func gpioContinuousRead() {
 	start := time.Now()
@@ -72,16 +74,11 @@ func checkGpioStatusChanged(data dto.GpioDto) bool {
 	return cx.HwLibs.CheckGpioDataChanged(gpioDto, data)
 }
 
-func ResetGpoState(waitTime uint32, gpio byte) {
-	for true {
-		time.Sleep(time.Second)
-	}
-}
-
 func ResetGpoStateFun() {
 	cx := context.GetContext()
 	for true {
 		if len(resetTimeData) == 0 {
+			mutexLocked = true
 			resetMutex.Lock()
 			continue
 		}
@@ -90,9 +87,8 @@ func ResetGpoStateFun() {
 
 		for i:=0;i<len(resetTimeData);i++ {
 			if now.Sub(resetTimeData[i].StartTime) >= time.Duration(resetTimeData[i].Time) * 1000000000 {
-				gpioDto := dao.GetGpioData()
 				gpoData := cx.HwLibs.GetOutputDataByDo(resetTimeData[i].Output)
-				cx.GpioDrv.Write(gpioDto, gpoData)
+				GpioWrite(gpoData)
 				changed = true
 				resetTimeData = append(resetTimeData[:i], resetTimeData[i+1:]...)
 				i--
@@ -111,9 +107,33 @@ func ResetGpoStateFun() {
 }
 
 func AddResetData(wtime uint32, output string) {
+	if !initResetTimeData {
+		resetTimeData = make([]dto.ResetTimeData,0)
+		initResetTimeData = true
+		go ResetGpoStateFun()
+	}
+	
 	var lResetTimeData dto.ResetTimeData
 	lResetTimeData.Time = wtime
 	lResetTimeData.StartTime = time.Now()
 	lResetTimeData.Output = output
 	resetTimeData = append(resetTimeData, lResetTimeData)
+	if mutexLocked {
+		resetMutex.Unlock()
+		mutexLocked = false
+	}
+}
+
+func GpioWrite(gpioWriteDto dto.GpioWriteDto) bool {
+	gpioData := dao.GetGpioData()
+	cx := context.GetContext()
+	cx.GpioDrv.Write(gpioData, gpioWriteDto)
+	rdw := cx.HwLibs.GetResetDataByWriteDto(gpioWriteDto)
+	
+	for i:=0; i<len(rdw); i++ {
+		AddResetData(rdw[i].Time, rdw[i].Output)
+	}
+
+
+	return true
 }
