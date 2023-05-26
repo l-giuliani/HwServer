@@ -49,8 +49,8 @@ func (gpio *GpioNKIOLC) Read() (bool, dto.GpioDto) {
 	doByte0 := byte(C.DIO_PollingReadDoByte(0));
 	doByte1 := byte(C.DIO_PollingReadDoByte(1));
 
-	fmt.Println(diByte0)
-	fmt.Println(diByte1)
+	//fmt.Println(diByte0)
+	//fmt.Println(diByte1)
 
 	var data NKIOLCDto.GpioNKIOLCDtoStruct
 
@@ -84,12 +84,14 @@ func (gpio *GpioNKIOLC) Read() (bool, dto.GpioDto) {
 		}
 	}
 
+	fmt.Println(data)
+
 	return true, data
 }
 
 func (gpio *GpioNKIOLC) Write(gpioDto dto.GpioDto, gpioWriteDto dto.GpioWriteDto) bool {
 	fmt.Println("Scrittura Digitali")
-	fmt.Println(gpioWriteDto)
+	//fmt.Println(gpioWriteDto)
 	gpioSpec := gpioDto.(NKIOLCDto.GpioNKIOLCDtoStruct)
 	gpioWriteSpec := gpioWriteDto.(NKIOLCDto.GpioNKIOLCSetData)
 

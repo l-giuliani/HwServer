@@ -4,6 +4,7 @@ type Config struct {
 	AcquTime uint32
 	UDPEnabled bool
 	UDPAddress string
+	InverseLogic bool
 }
 
 func NewConfig() *Config {
@@ -15,4 +16,5 @@ func (config *Config) Init() {
 	config.AcquTime = 15
 	config.UDPEnabled = true
 	config.UDPAddress = "127.0.0.1:9220"
+	config.InverseLogic = true
 }

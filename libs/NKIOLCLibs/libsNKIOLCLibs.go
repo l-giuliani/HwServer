@@ -2,6 +2,7 @@ package NKIOLCLibs
 
 import "it.etg/gpioServer/dto"
 import "it.etg/gpioServer/dto/NKIOLCDto"
+import "it.etg/gpioServer/context"
 import "encoding/json"
 import "reflect"
 import "fmt"
@@ -116,7 +117,13 @@ func (hwLibs *HwLibsNKIOLC) GetOutputDataByDo(output string) dto.GpioWriteDto {
 	var gpoDataEl NKIOLCDto.GpioNKIOLCSetDataEl
 
 	gpoDataEl.Update = true
-	gpoDataEl.Value	= 0
+	var vv byte
+	if context.GetContext().Conf.InverseLogic {
+		vv = 1
+	} else {
+		vv = 0
+	}
+	gpoDataEl.Value	= vv
 
 	if output == "Y0" {
 		gpoData.Y0 = gpoDataEl
@@ -164,7 +171,15 @@ func (hwLibs *HwLibsNKIOLC) GetResetDataByWriteDto(gpioDto dto.GpioWriteDto) []d
 
 	for i := 0; i< v.NumField(); i++ {
         el := v.Field(i).Interface().(NKIOLCDto.GpioNKIOLCSetDataEl)
-		if el.Update && el.Value != 0 && el.Time > 0  {
+		
+		var vv byte
+		if context.GetContext().Conf.InverseLogic {
+			vv = 0
+		} else {
+			vv = 1
+		}
+		
+		if el.Update && el.Value == vv && el.Time > 0  {
 			var r dto.ResetTimeData
 			r.Time = el.Time
 			r.Output = fmt.Sprintf("%s%d", "Y", i)
