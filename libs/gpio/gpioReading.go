@@ -5,10 +5,14 @@ import "it.etg/gpioServer/context"
 import "it.etg/gpioServer/dao"
 import "it.etg/gpioServer/dto"
 import "it.etg/gpioServer/libs/network"
+import "sync"
 import "fmt"
 
 var readExecuting bool = false
 var udpClient *network.UdpClient = nil
+
+var resetMutex sync.Mutex
+var resetTimeData []dto.ResetTimeData
 
 func gpioContinuousRead() {
 	start := time.Now()
@@ -56,7 +60,7 @@ func GpioRead() (bool, dto.GpioDto) {
 		fmt.Println("Errore Lettura Gpio")
 		return false, gpioDto
 	}
-	fmt.Println(gpioDto)
+	//fmt.Println(gpioDto)
 	//dao.SetGpioData(gpioDto)
 
 	return true, gpioDto
@@ -64,9 +68,52 @@ func GpioRead() (bool, dto.GpioDto) {
 
 func checkGpioStatusChanged(data dto.GpioDto) bool {
 	gpioDto := dao.GetGpioData()
-	fmt.Println("=========")
-	fmt.Println(data)
-	fmt.Println(gpioDto)
 	cx := context.GetContext()
 	return cx.HwLibs.CheckGpioDataChanged(gpioDto, data)
+}
+
+func ResetGpoState(waitTime uint32, gpio byte) {
+	for true {
+		time.Sleep(time.Second)
+	}
+}
+
+func ResetGpoStateFun() {
+	cx := context.GetContext()
+	for true {
+		if len(resetTimeData) == 0 {
+			resetMutex.Lock()
+			continue
+		}
+		now := time.Now()
+		changed := false
+
+		for i:=0;i<len(resetTimeData);i++ {
+			if now.Sub(resetTimeData[i].StartTime) >= time.Duration(resetTimeData[i].Time) * 1000000000 {
+				gpioDto := dao.GetGpioData()
+				gpoData := cx.HwLibs.GetOutputDataByDo(resetTimeData[i].Output)
+				cx.GpioDrv.Write(gpioDto, gpoData)
+				changed = true
+				resetTimeData = append(resetTimeData[:i], resetTimeData[i+1:]...)
+				i--
+			}
+		}
+		if changed {
+			res, gpioR := GpioRead()
+			if res {
+				NotifyStatus(gpioR)
+				dao.SetGpioData(gpioR)
+			}
+		}
+
+		time.Sleep(time.Second)
+	}
+}
+
+func AddResetData(wtime uint32, output string) {
+	var lResetTimeData dto.ResetTimeData
+	lResetTimeData.Time = wtime
+	lResetTimeData.StartTime = time.Now()
+	lResetTimeData.Output = output
+	resetTimeData = append(resetTimeData, lResetTimeData)
 }

@@ -14,3 +14,6 @@ run:
 
 deploy:
 	scp $(BUILDPATH)$(EXE) arpaeuser@172.16.0.90:/home/app/
+
+size:
+	ls -la $(BUILDPATH)

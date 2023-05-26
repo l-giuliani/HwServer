@@ -6,4 +6,5 @@ type HwLibs interface {
 	ParseWriteData([]byte) (bool, dto.GpioWriteDto)
 	GetFormattedData(dto.GpioDto) []byte
 	CheckGpioDataChanged(dto.GpioDto, dto.GpioDto) bool
+	GetOutputDataByDo(output string) dto.GpioWriteDto
 }

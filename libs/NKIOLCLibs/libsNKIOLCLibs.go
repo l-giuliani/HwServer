@@ -108,3 +108,47 @@ func (hwLibs *HwLibsNKIOLC) CheckGpioDataChanged(oldData dto.GpioDto, newData dt
 	}
 	return false
 }
+
+func (hwLibs *HwLibsNKIOLC) GetOutputDataByDo(output string) dto.GpioWriteDto {
+	var gpoData NKIOLCDto.GpioNKIOLCSetData
+	var gpoDataEl NKIOLCDto.GpioNKIOLCSetDataEl
+
+	gpoDataEl.Update = true
+	gpoDataEl.Value	= 0
+
+	if output == "Y0" {
+		gpoData.Y0 = gpoDataEl
+	} else if output == "Y1" {
+		gpoData.Y1 = gpoDataEl
+	} else if output == "Y2" {
+		gpoData.Y2 = gpoDataEl
+	} else if output == "Y3" {
+		gpoData.Y3 = gpoDataEl
+	} else if output == "Y4" {
+		gpoData.Y4 = gpoDataEl
+	} else if output == "Y5" {
+		gpoData.Y5 = gpoDataEl
+	} else if output == "Y6" {
+		gpoData.Y6 = gpoDataEl
+	} else if output == "Y7" {
+		gpoData.Y7 = gpoDataEl
+	} else if output == "Y8" {
+		gpoData.Y8 = gpoDataEl
+	} else if output == "Y9" {
+		gpoData.Y9 = gpoDataEl
+	} else if output == "Y10" {
+		gpoData.Y10 = gpoDataEl
+	} else if output == "Y11" {
+		gpoData.Y11 = gpoDataEl
+	} else if output == "Y12" {
+		gpoData.Y12 = gpoDataEl
+	} else if output == "Y13" {
+		gpoData.Y13 = gpoDataEl
+	} else if output == "Y14" {
+		gpoData.Y14 = gpoDataEl
+	} else if output == "Y15" {
+		gpoData.Y15 = gpoDataEl
+	}
+
+	return gpoData
+}

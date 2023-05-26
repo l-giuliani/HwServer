@@ -15,6 +15,7 @@ type GpioNKIOLC struct {
 	Initialized bool
 }
 
+
 func NewGpioNKIOLC() *GpioNKIOLC{
 	gpio := new(GpioNKIOLC)
 	gpio.Initialized = false
@@ -132,3 +133,4 @@ func (gpio *GpioNKIOLC) Write(gpioDto dto.GpioDto, gpioWriteDto dto.GpioWriteDto
 
 	return true
 }
+
