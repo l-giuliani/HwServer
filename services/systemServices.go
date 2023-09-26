@@ -14,4 +14,5 @@ func SystemInit() {
 	configInit()
 	HwInit()
 	GpioInit(true)
+	WdInit()
 }

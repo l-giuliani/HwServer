@@ -3,6 +3,7 @@ EXE = gpioServer
 
 $(EXE): 
 	go build -o $(BUILDPATH)$(EXE)
+	cp extlib/libNP6118BaseLib.so $(BUILDPATH)
 
 all: $(EXE)
 

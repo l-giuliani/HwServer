@@ -5,6 +5,8 @@ type Config struct {
 	UDPEnabled bool
 	UDPAddress string
 	InverseLogic bool
+	WdStartTime uint8
+	WdActive	bool
 }
 
 func NewConfig() *Config {
@@ -17,4 +19,7 @@ func (config *Config) Init() {
 	config.UDPEnabled = true
 	config.UDPAddress = "127.0.0.1:9220"
 	config.InverseLogic = true
+
+	config.WdActive = true
+	config.WdStartTime = 12
 }

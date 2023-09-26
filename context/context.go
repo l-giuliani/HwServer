@@ -6,6 +6,7 @@ import "it.etg/gpioServer/config"
 
 type Context struct {
 	GpioDrv driver.Gpio
+	WdDrv	driver.Watchdog
 	HwLibs	libs.HwLibs
 	Conf 	*config.Config
 }

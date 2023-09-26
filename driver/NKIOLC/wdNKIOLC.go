@@ -19,5 +19,27 @@ func NewWdNKIOLC() *WdNKIOLC{
 }
 
 func (wd *WdNKIOLC) Init() bool {
-	
+	res := C.NKBASE_LibraryInit()
+
+	if res != C.NKIO_ENOERR {
+		panic("Wd library not initialized")
+	} else {
+		wd.Initialized = true
+	}
+	return wd.Initialized
+}
+
+func (wd *WdNKIOLC) StartWd(time uint8) bool{
+	res := C.NKWDT_Start(1, C.uchar(time))
+	return (res == C.NKIO_ENOERR)
+}
+
+func (wd *WdNKIOLC) ResetWd(time uint8) bool {
+	res := C.NKWDT_Reset(C.uchar(time))
+	return (res == C.NKIO_ENOERR)
+}
+
+func (wd *WdNKIOLC) StopWd() bool {
+	res := C.NKWDT_Stop()
+	return (res == C.NKIO_ENOERR)
 }
