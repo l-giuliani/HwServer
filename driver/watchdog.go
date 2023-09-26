@@ -1,0 +1,3 @@
+type Watchdog interface {
+	ResetWd();
+}
